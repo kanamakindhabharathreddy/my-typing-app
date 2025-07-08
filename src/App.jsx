@@ -1,261 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { RotateCcw, Play, BookOpen, Target, Zap, User, Trophy, LogOut, Crown, Medal, Award } from 'lucide-react';
-
-// Login Modal Component (moved outside TypingApp and manages its own form state)
-const LoginModal = ({ showLogin, setShowLogin, onLoginSubmit, loginError, setLoginError, setShowRegister, setShowForgotPasswordModal }) => {
-  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setLoginForm(prev => ({ ...prev, [name]: value }));
-    setLoginError(''); // Clear error on input change
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onLoginSubmit(loginForm.username, loginForm.password);
-  };
-
-  // Effect to reset form when modal is shown/hidden
-  useEffect(() => {
-    if (showLogin) {
-      setLoginForm({ username: '', password: '' });
-      setLoginError(''); // Clear error when modal opens
-    }
-  }, [showLogin]); // Only run when showLogin changes
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        <form onSubmit={handleSubmit}>
-          {loginError && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-              <span className="block sm:inline">{loginError}</span>
-            </div>
-          )}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Username</label>
-            <input
-              type="text"
-              name="username"
-              value={loginForm.username}
-              onChange={handleInputChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500"
-              required
-              autoFocus // Ensures focus when modal opens
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={loginForm.password}
-              onChange={handleInputChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500"
-              required
-            />
-          </div>
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => { setShowLogin(false); setLoginError(''); }} // Clear error when closing modal
-              className="flex-1 bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-        <p className="text-center mt-4 text-gray-600">
-          Don't have an account?{' '}
-          <button
-            onClick={() => { setShowLogin(false); setLoginError(''); setShowRegister(true); }} // Clear login error when switching to register
-            className="text-blue-600 hover:underline"
-          >
-            Register here
-          </button>
-        </p>
-        <p className="text-center mt-2 text-gray-600">
-          <button
-            onClick={() => { setShowLogin(false); setLoginError(''); setShowForgotPasswordModal(true); }}
-            className="text-blue-600 hover:underline"
-          >
-            Forgot Password?
-          </button>
-        </p>
-      </div>
-    </div>
-  );
-};
-
-// Register Modal Component (moved outside TypingApp and manages its own form state)
-const RegisterModal = ({ showRegister, setShowRegister, onRegisterSubmit, registerError, setRegisterError, setShowLogin }) => {
-  const [registerForm, setRegisterForm] = useState({ username: '', email: '', password: '' });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setRegisterForm(prev => ({ ...prev, [name]: value }));
-    setRegisterError(''); // Clear error on input change
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onRegisterSubmit(registerForm.username, registerForm.email, registerForm.password);
-  };
-
-  // Effect to reset form when modal is shown/hidden
-  useEffect(() => {
-    if (showRegister) {
-      setRegisterForm({ username: '', email: '', password: '' });
-      setRegisterError(''); // Clear error when modal opens
-    }
-  }, [showRegister]); // Only run when showRegister changes
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
-        <form onSubmit={handleSubmit}>
-          {registerError && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-              <span className="block sm:inline">{registerError}</span>
-            </div>
-          )}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Username</label>
-            <input
-              type="text"
-              name="username"
-              value={registerForm.username}
-              onChange={handleInputChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500"
-              required
-              autoFocus // Ensures focus when modal opens
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={registerForm.email}
-              onChange={handleInputChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500"
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={registerForm.password}
-              onChange={handleInputChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500"
-              required
-            />
-          </div>
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Register
-            </button>
-            <button
-              type="button"
-              onClick={() => { setShowRegister(false); setRegisterError(''); }} // Clear error when closing modal
-              className="flex-1 bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-        <p className="text-center mt-4 text-gray-600">
-          Already have an account?{' '}
-          <button
-            onClick={() => { setShowRegister(false); setRegisterError(''); setShowLogin(true); }} // Clear register error when switching to login
-            className="text-blue-600 hover:underline"
-          >
-            Login here
-          </button>
-        </p>
-      </div>
-    </div>
-  );
-};
-
-// Forgot Password Modal Component
-const ForgotPasswordModal = ({ showForgotPasswordModal, setShowForgotPasswordModal, onForgotPasswordSubmit, forgotPasswordMessage, setForgotPasswordMessage }) => {
-  const [email, setEmail] = useState('');
-
-  const handleInputChange = (e) => {
-    setEmail(e.target.value);
-    setForgotPasswordMessage(''); // Clear message on input change
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onForgotPasswordSubmit(email);
-  };
-
-  useEffect(() => {
-    if (showForgotPasswordModal) {
-      setEmail(''); // Clear email when modal opens
-      setForgotPasswordMessage(''); // Clear message when modal opens
-    }
-  }, [showForgotPasswordModal]);
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">Forgot Password</h2>
-        <form onSubmit={handleSubmit}>
-          {forgotPasswordMessage && (
-            <div className={`px-4 py-3 rounded relative mb-4 ${forgotPasswordMessage.includes('exists') || forgotPasswordMessage.includes('sent') ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'}`} role="alert">
-              <span className="block sm:inline">{forgotPasswordMessage}</span>
-            </div>
-          )}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Enter your registered Email</label>
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={handleInputChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500"
-              required
-              autoFocus
-            />
-          </div>
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Reset Password
-            </button>
-            <button
-              type="button"
-              onClick={() => { setShowForgotPasswordModal(false); setForgotPasswordMessage(''); }}
-              className="flex-1 bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
+import { RotateCcw, Play, BookOpen, Target, Zap, User, Crown, Medal, Award } from 'lucide-react'; // Trophy icon removed
 
 const TypingApp = () => {
   const [text, setText] = useState('');
@@ -270,47 +14,34 @@ const TypingApp = () => {
   const [totalChars, setTotalChars] = useState(0);
   const [showTips, setShowTips] = useState(false);
   const [currentTip, setCurrentTip] = useState(0);
+  const [isStarted, setIsStarted] = useState(false);
 
-  // Authentication and user data
-  const [currentUser, setCurrentUser] = useState(null);
-  const [showLogin, setShowLogin] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
-  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false); // New state for forgot password modal
-  const [users, setUsers] = useState([]);
+  // User scores (persisted locally for best score)
   const [userScores, setUserScores] = useState([]);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
-
-  // State for displaying login/register errors
-  const [loginError, setLoginError] = useState('');
-  const [registerError, setRegisterError] = useState('');
-  const [forgotPasswordMessage, setForgotPasswordMessage] = useState(''); // New state for forgot password messages
-
+  // showLeaderboard state removed
+  // State to hold the best score for the current session (or overall from local storage)
+  const [bestScore, setBestScore] = useState({ wpm: 0, accuracy: 0 });
 
   const inputRef = useRef(null);
 
-  // Load data from memory on component mount
+  // Load scores from local storage on component mount
   useEffect(() => {
-    const savedUsers = JSON.parse(localStorage.getItem('typingAppUsers') || '[]');
     const savedScores = JSON.parse(localStorage.getItem('typingAppScores') || '[]');
-    const savedCurrentUser = JSON.parse(localStorage.getItem('typingAppCurrentUser') || 'null');
-
-    setUsers(savedUsers);
     setUserScores(savedScores);
-    setCurrentUser(savedCurrentUser);
   }, []);
 
-  // Save data to memory whenever it changes
-  useEffect(() => {
-    localStorage.setItem('typingAppUsers', JSON.stringify(users));
-  }, [users]);
-
+  // Save scores to local storage whenever userScores changes
   useEffect(() => {
     localStorage.setItem('typingAppScores', JSON.stringify(userScores));
   }, [userScores]);
 
+  // Effect to update best score when userScores changes
+  // This will now calculate the overall best score from all saved scores
   useEffect(() => {
-    localStorage.setItem('typingAppCurrentUser', JSON.stringify(currentUser));
-  }, [currentUser]);
+    const best = getUserBestScore(); // Call without userId as there's no current user
+    setBestScore(best);
+  }, [userScores]);
+
 
   const typingTips = [
     {
@@ -372,6 +103,8 @@ const TypingApp = () => {
     } else if (timeLeft === 0) {
       setIsActive(false);
       setIsCompleted(true);
+      // Automatically save score if time runs out
+      saveScore(calculateWPM(), calculateAccuracy());
     }
     return () => clearInterval(interval);
   }, [isActive, timeLeft]);
@@ -386,13 +119,12 @@ const TypingApp = () => {
     return totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
   };
 
+  // Save score function - now saves under a generic 'guest' user
   const saveScore = (finalWpm, finalAccuracy) => {
-    if (!currentUser) return;
-
     const newScore = {
       id: Date.now(),
-      userId: currentUser.id,
-      username: currentUser.username,
+      userId: 'guest', // Hardcoded ID for guest user
+      username: 'Guest', // Hardcoded username for guest user
       wpm: finalWpm,
       accuracy: finalAccuracy,
       date: new Date().toISOString(),
@@ -403,11 +135,41 @@ const TypingApp = () => {
     setUserScores(updatedScores);
   };
 
+  // Function to start the test
+  const startTest = () => {
+    setIsStarted(true);
+    setIsActive(true);
+    setTimeLeft(60); // Ensure timer starts fresh
+    setUserInput(''); // Clear input on start
+    setIsCompleted(false); // Reset completion status
+    setWpm(0);
+    setAccuracy(100);
+    setCorrectChars(0);
+    setTotalChars(0);
+    setText(sampleTexts[Math.floor(Math.random() * sampleTexts.length)]); // Get new text
+    inputRef.current?.focus(); // Focus input field
+  };
+
+  // Function to submit the test early
+  const submitTest = () => {
+    setIsActive(false);
+    setIsCompleted(true);
+    setTimeLeft(0); // Stop the timer immediately
+
+    const finalWpm = calculateWPM();
+    const finalAccuracy = calculateAccuracy();
+
+    setWpm(finalWpm);
+    setAccuracy(finalAccuracy);
+    saveScore(finalWpm, finalAccuracy);
+  };
+
   const handleInputChange = (e) => {
     const value = e.target.value;
     setUserInput(value);
 
-    if (!isActive && value.length > 0) {
+    // Only start timer if test is active and user starts typing
+    if (isStarted && !isActive && value.length > 0) {
       setIsActive(true);
     }
 
@@ -422,16 +184,16 @@ const TypingApp = () => {
     setCorrectChars(correct);
     setTotalChars(total);
 
-    const currentAccuracy = calculateAccuracy();
-    const currentWpm = calculateWPM();
+    // Update WPM and Accuracy as user types
+    setAccuracy(calculateAccuracy());
+    setWpm(calculateWPM());
 
-    setAccuracy(currentAccuracy);
-    setWpm(currentWpm);
-
+    // If user types the entire text correctly
     if (value === text) {
       setIsActive(false);
       setIsCompleted(true);
-      saveScore(currentWpm, currentAccuracy);
+      setTimeLeft(0); // Ensure timer stops
+      saveScore(calculateWPM(), calculateAccuracy());
     }
   };
 
@@ -440,97 +202,24 @@ const TypingApp = () => {
     setIsActive(false);
     setTimeLeft(60);
     setIsCompleted(false);
+    setIsStarted(false); // Reset started state, waiting for manual start
     setWpm(0);
     setAccuracy(100);
     setCurrentWordIndex(0);
     setCorrectChars(0);
     setTotalChars(0);
     setText(sampleTexts[Math.floor(Math.random() * sampleTexts.length)]);
-    inputRef.current?.focus();
+    inputRef.current?.blur(); // Blur input until Start is clicked
   };
 
-  // Handles user login - now receives username and password from LoginModal
-  const handleLoginSubmit = (username, password) => {
-    const user = users.find(u => u.username === username && u.password === password);
-    if (user) {
-      setCurrentUser(user);
-      setShowLogin(false);
-      setLoginError(''); // Clear any previous login errors
-    } else {
-      setLoginError('Invalid username or password.'); // Set error message for display in modal
-    }
-  };
-
-  // Handles user registration - now receives username, email, and password from RegisterModal
-  const handleRegisterSubmit = (username, email, password) => {
-    if (users.find(u => u.username === username)) {
-      setRegisterError('Username already exists. Please choose a different username.');
-      return;
-    }
-    if (users.find(u => u.email === email)) {
-      setRegisterError('Email already exists. Please use a different email or login.');
-      return;
-    }
-
-    const newUser = {
-      id: Date.now(),
-      username: username,
-      email: email,
-      password: password,
-      joinDate: new Date().toISOString()
-    };
-
-    setUsers([...users, newUser]);
-    setCurrentUser(newUser);
-    setShowRegister(false);
-    setRegisterError(''); // Clear any previous registration errors
-  };
-
-  // Handles forgot password submit
-  const handleForgotPasswordSubmit = (email) => {
-    const userExists = users.some(user => user.email === email);
-    if (userExists) {
-      // In a real application, you would send a password reset email here.
-      // For this local storage based app, we'll just simulate it.
-      setForgotPasswordMessage('If an account with that email exists, a password reset link has been sent.');
-      console.log(`Simulated password reset for email: ${email}`);
-      // Optionally, you could change the password to a default one for testing:
-      // const updatedUsers = users.map(user =>
-      //   user.email === email ? { ...user, password: 'newpassword123' } : user
-      // );
-      // setUsers(updatedUsers);
-    } else {
-      setForgotPasswordMessage('No account found with that email address.');
-    }
-  };
-
-  const handleLogout = () => {
-    setCurrentUser(null);
-    resetTest();
-  };
-
-  const getUserBestScore = (userId) => {
-    const userScoresList = userScores.filter(score => score.userId === userId);
-    return userScoresList.reduce((best, current) => {
+  // getUserBestScore now calculates the overall best score from all userScores
+  const getUserBestScore = () => {
+    return userScores.reduce((best, current) => {
       return current.wpm > best.wpm ? current : best;
     }, { wpm: 0, accuracy: 0 });
   };
 
-  const getLeaderboard = () => {
-    const userBestScores = users.map(user => {
-      const bestScore = getUserBestScore(user.id);
-      return {
-        username: user.username,
-        wpm: bestScore.wpm,
-        accuracy: bestScore.accuracy,
-        userId: user.id
-      };
-    }).filter(score => score.wpm > 0)
-      .sort((a, b) => b.wpm - a.wpm)
-      .slice(0, 10);
-
-    return userBestScores;
-  };
+  // getLeaderboard function removed as it's no longer needed for display
 
   const renderText = () => {
     return text.split('').map((char, index) => {
@@ -552,7 +241,7 @@ const TypingApp = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
       <div className="bg-white rounded-2xl shadow-xl p-8">
-        {/* Header with user info */}
+        {/* Header with user info (simplified for guest) */}
         <div className="flex justify-between items-center mb-8">
           <div className="text-center flex-1">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">Typing Speed Test</h1>
@@ -560,118 +249,41 @@ const TypingApp = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            {currentUser ? (
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="font-semibold text-gray-800">Welcome, {currentUser.username}!</div>
-                  <div className="text-sm text-gray-600">
-                    Best: {getUserBestScore(currentUser.id).wpm} WPM
-                  </div>
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                >
-                  <LogOut size={16} />
-                  Logout
-                </button>
+            <div className="text-right">
+              <div className="font-semibold text-gray-800">Welcome, Guest!</div>
+              {/* Display overall best score from local storage */}
+              <div className="text-sm text-gray-600">
+                Best: {bestScore.wpm} WPM
               </div>
-            ) : (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowLogin(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <User size={16} />
-                  Login
-                </button>
-                <button
-                  onClick={() => setShowRegister(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  Register
-                </button>
-              </div>
-            )}
+            </div>
           </div>
         </div>
 
-        {/* Navigation tabs */}
+        {/* Navigation tabs (Leaderboard button removed) */}
         <div className="flex justify-center gap-4 mb-8">
           <button
-            onClick={() => { setShowTips(false); setShowLeaderboard(false); }}
+            onClick={() => { setShowTips(false); }} // showLeaderboard state removed
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              !showTips && !showLeaderboard ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              !showTips ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
             Speed Test
           </button>
           <button
-            onClick={() => { setShowTips(true); setShowLeaderboard(false); }}
+            onClick={() => { setShowTips(true); }} // showLeaderboard state removed
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
               showTips ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
             Tips & Guide
           </button>
-          <button
-            onClick={() => { setShowLeaderboard(true); setShowTips(false); }}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-colors ${
-              showLeaderboard ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            <Trophy size={16} />
-            Leaderboard
-          </button>
+          {/* Leaderboard button removed */}
         </div>
 
-        {/* Leaderboard Section */}
-        {showLeaderboard ? (
+        {/* Conditional rendering adjusted: now only checks for showTips */}
+        {showTips ? (
           <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">🏆 Leaderboard</h2>
-              <p className="text-gray-600">Top 10 fastest typists</p>
-            </div>
-
-            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6">
-              {getLeaderboard().length > 0 ? (
-                <div className="space-y-4">
-                  {getLeaderboard().map((user, index) => (
-                    <div key={user.userId} className={`flex items-center gap-4 p-4 rounded-lg ${
-                      index === 0 ? 'bg-yellow-100 border-2 border-yellow-300' :
-                        index === 1 ? 'bg-gray-100 border-2 border-gray-300' :
-                          index === 2 ? 'bg-orange-100 border-2 border-orange-300' :
-                            'bg-white border border-gray-200'
-                      }`}>
-                      <div className="text-2xl">
-                        {index === 0 ? <Crown className="text-yellow-600" size={32} /> :
-                          index === 1 ? <Medal className="text-gray-600" size={32} /> :
-                            index === 2 ? <Award className="text-orange-600" size={32} /> :
-                              <span className="font-bold text-gray-600 text-xl">#{index + 1}</span>}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-semibold text-gray-800">{user.username}</div>
-                        <div className="text-sm text-gray-600">{user.wpm} WPM • {user.accuracy}% accuracy</div>
-                      </div>
-                      {currentUser && user.userId === currentUser.id && (
-                        <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                          You
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <Trophy size={48} className="mx-auto mb-4 text-gray-300" />
-                  <p>No scores yet. Be the first to complete a test!</p>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : showTips ? (
-          <div className="space-y-6">
-            {/* Tips content (keeping existing tips section) */}
+            {/* Tips content */}
             <div className="flex justify-center gap-2 mb-6">
               {typingTips.map((_, index) => (
                 <button
@@ -836,12 +448,31 @@ const TypingApp = () => {
                 ref={inputRef}
                 type="text"
                 className="w-full p-4 rounded-lg border-2 border-blue-400 focus:outline-none focus:border-blue-600 text-lg shadow-md font-mono"
-                placeholder={isActive ? "Start typing..." : "Click reset to begin"}
+                placeholder={isStarted ? "Start typing..." : "Click Start to begin"}
+                disabled={!isStarted || isCompleted}
                 value={userInput}
                 onChange={handleInputChange}
-                disabled={isCompleted}
                 autoFocus
               />
+              {/* Start and Submit Buttons */}
+              <div className="flex gap-4 mt-4 justify-center">
+                {!isStarted && (
+                  <button
+                    onClick={startTest}
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-lg"
+                  >
+                    <Play size={20} className="inline-block mr-2" /> Start
+                  </button>
+                )}
+                {isStarted && !isCompleted && (
+                  <button
+                    onClick={submitTest}
+                    className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors shadow-lg"
+                  >
+                    <Zap size={20} className="inline-block mr-2" /> Submit
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="flex justify-between items-center bg-white p-5 rounded-xl shadow-md border border-gray-200">
@@ -867,48 +498,12 @@ const TypingApp = () => {
                 <h3 className="text-2xl font-bold mb-2">Test Completed! 🎉</h3>
                 <p className="text-lg">Your final WPM: <span className="font-extrabold text-green-700">{wpm}</span></p>
                 <p className="text-lg">Your accuracy: <span className="font-extrabold text-green-700">{accuracy}%</span></p>
-                {currentUser && (
-                  <p className="text-md mt-2">Your score has been saved. Check the leaderboard!</p>
-                )}
-                {!currentUser && (
-                  <p className="text-md mt-2">Login to save your score and compete on the leaderboard!</p>
-                )}
+                <p className="text-md mt-2">Your score has been saved locally.</p>
               </div>
             )}
           </div>
         )}
       </div>
-
-      {showLogin && (
-        <LoginModal
-          showLogin={showLogin}
-          setShowLogin={setShowLogin}
-          onLoginSubmit={handleLoginSubmit} // New prop name for clarity
-          loginError={loginError}
-          setLoginError={setLoginError}
-          setShowRegister={setShowRegister}
-          setShowForgotPasswordModal={setShowForgotPasswordModal} // Pass new prop
-        />
-      )}
-      {showRegister && (
-        <RegisterModal
-          showRegister={showRegister}
-          setShowRegister={setShowRegister}
-          onRegisterSubmit={handleRegisterSubmit} // New prop name for clarity
-          registerError={registerError}
-          setRegisterError={setRegisterError}
-          setShowLogin={setShowLogin}
-        />
-      )}
-      {showForgotPasswordModal && (
-        <ForgotPasswordModal
-          showForgotPasswordModal={showForgotPasswordModal}
-          setShowForgotPasswordModal={setShowForgotPasswordModal}
-          onForgotPasswordSubmit={handleForgotPasswordSubmit}
-          forgotPasswordMessage={forgotPasswordMessage}
-          setForgotPasswordMessage={setForgotPasswordMessage}
-        />
-      )}
     </div>
   );
 };
